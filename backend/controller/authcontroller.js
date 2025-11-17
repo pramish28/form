@@ -2,8 +2,9 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import ExcelJS from "exceljs";
 
-// import { syncDatabaseToSheet } from "../utils/googleSheets.js";
-
+// import { sendEmail } from "../utils/sendEmail.js";
+// import User from "../models/User.js";
+// import bcrypt from "bcrypt";
 
 // export const signup = async (req, res) => {
 //   try {
@@ -15,21 +16,23 @@ import ExcelJS from "exceljs";
 //     const hashedPassword = await bcrypt.hash(password, 10);
 //     await User.create({ name, email, password: hashedPassword });
 
-//     // Fetch all users and sync to Google Sheet
-//     const allUsers = await User.find();
-//     const SPREADSHEET_ID = "1ffh79hNxV9NH_G7IbqmKV3LnjUn4-_uwa2RxA73M_nU";
-//     await syncDatabaseToSheet(SPREADSHEET_ID, allUsers);
+//     // Send email to the registered user
+//     await sendEmail({
+//       to: email, 
+//       subject: "Welcome! Registration Successful",
+//       text: `Hello ${name},\n\nYou have successfully registered in our system.\n\nThank you!`,
+//     });
 
-//     res.json({ message: "Signup successful" });
+//     res.json({ message: "Signup successful! Email sent to user." });
 //   } catch (err) {
 //     console.log(err);
 //     res.status(500).json({ message: "Signup failed", error: err.message });
 //   }
 // };
 
- import { syncDatabaseToSheet } from "../utils/googleSheets.js";
-import { sendEmail } from "../utils/sendmail.js";
 
+import { sendEmail } from "../utils/sendmail.js";
+import { syncDatabaseToSheet } from "../utils/googleSheets.js";
 
 export const signup = async (req, res) => {
   try {
@@ -41,24 +44,31 @@ export const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({ name, email, password: hashedPassword });
 
-    // Sync database to Google Sheet
+    // Sync all users to Google Sheet
     const allUsers = await User.find();
-    const SPREADSHEET_ID = "1ffh79hNxV9NH_G7IbqmKV3LnjUn4-_uwa2RxA73M_nU";
-    await syncDatabaseToSheet(SPREADSHEET_ID, allUsers);
+    await syncDatabaseToSheet(allUsers);
 
-    // Send email notification
+    // Send email to the new user
     await sendEmail({
-      to: "pramishsharma78@gmail.com", // recipient
+      to: email,
+      subject: "Welcome! Registration Successful",
+      text: `Hello ${name},\n\nYou have successfully registered.\n\nThank you!`,
+    });
+
+    // Send email to admin
+    await sendEmail({
+      to: process.env.ADMIN_EMAIL,
       subject: "New User Registered",
       text: `A new user has registered.\nName: ${name}\nEmail: ${email}`,
     });
 
-    res.json({ message: "Signup successful and email sent" });
+    res.json({ message: "Signup successful! Emails sent to user and admin." });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Signup failed", error: err.message });
   }
 };
+
 
 
 // Login

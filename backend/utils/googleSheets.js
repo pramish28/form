@@ -30,3 +30,36 @@ export const syncDatabaseToSheet = async (spreadsheetId, allUsers) => {
     console.log("Google Sheet Sync Error:", err.message);
   }
 };
+
+
+// import { google } from "googleapis";
+// import fs from "fs";
+
+// const CREDENTIALS = JSON.parse(fs.readFileSync("./credentials.json"));
+
+// const auth = new google.auth.GoogleAuth({
+//   credentials: CREDENTIALS,
+//   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+// });
+
+// export const syncDatabaseToSheet = async (allUsers) => {
+//   try {
+//     const client = await auth.getClient();
+//     const sheets = google.sheets({ version: "v4", auth: client });
+
+//     const values = allUsers.map(u => [u.name, u.email]);
+
+//     await sheets.spreadsheets.values.update({
+//       spreadsheetId: process.env.SPREADSHEET_ID,
+//       range: "Sheet1!A1:B",
+//       valueInputOption: "RAW",
+//       requestBody: {
+//         values: [["Name", "Email"], ...values], // header + data
+//       },
+//     });
+
+//     console.log("Google Sheet synced!");
+//   } catch (err) {
+//     console.log("Google Sheet sync error:", err.message);
+//   }
+// };

@@ -2,18 +2,16 @@ import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ to, subject, text }) => {
   try {
-    // Create transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail", 
+      service: "gmail",  // or your email provider
       auth: {
-       user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS, 
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Send mail
     const info = await transporter.sendMail({
-      from: `"Registration Alert" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_USER,
       to,
       subject,
       text,
@@ -21,6 +19,6 @@ export const sendEmail = async ({ to, subject, text }) => {
 
     console.log("Email sent:", info.response);
   } catch (err) {
-    console.log("Email error:", err.message);
+    console.log("Email sending error:", err.message);
   }
 };
